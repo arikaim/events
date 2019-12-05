@@ -14,9 +14,9 @@ use Arikaim\Core\Utils\Utils;
 use Arikaim\Core\Events\Event;
 use Arikaim\Core\Interfaces\Events\EventInterface;
 use Arikaim\Core\Interfaces\Events\EventSubscriberInterface;
-use Arikaim\Core\Interfaces\EventDispatcherInterface;
-use Arikaim\Core\Interfaces\EventRegistryInterface;
-use Arikaim\Core\Interfaces\SubscriberRegistryInterface;
+use Arikaim\Core\Interfaces\Events\EventDispatcherInterface;
+use Arikaim\Core\Interfaces\Events\EventRegistryInterface;
+use Arikaim\Core\Interfaces\Events\SubscriberRegistryInterface;
 
 /**
  * Dispatch and manage events and event subscribers.
@@ -55,14 +55,59 @@ class EventsManager implements EventDispatcherInterface
     }
     
     /**
-     * Unregister events for extension (removes events from db table)
+     * Set events status
      *
-     * @param string $extension
-     * @return void
+     * @param array $filter
+     * @param integer $status
+     * @return boolean
      */
-    public function unregisterEvents($extension)
+    public function setEventsStatus(array $filter = [], $status)
     {
-        return $this->eventRegistry->deleteEvents($extension);       
+        return $this->eventRegistry->setEventsStatus($filter,$status);
+    }
+
+    /**
+     * Delete events.
+     *
+     * @param array $filter
+     * @return bool
+     */
+    public function deleteEvents(array $filter)
+    {
+        return $this->eventRegistry->deleteEvents($filter);
+    }
+
+    /**
+     * Delete subscribers.
+     *
+     * @param array $filter
+     * @return bool
+     */
+    public function deleteSubscribers(array $filter)
+    {
+        return $this->subscriberRegistry->deleteSubscribers($filter);
+    }
+
+    /**
+     * Get events list
+     *
+     * @param array $filter
+     * @return array
+     */
+    public function getEvents(array $filter = [])
+    {
+        return $this->eventRegistry->getEvents($filter);
+    }
+
+    /**
+     * Get subscribers list
+     *
+     * @param array $filter
+     * @return array
+     */
+    public function getSubscribers(array $filter = [])
+    {
+        return $this->subscriberRegistry->getSubscribers($filter);
     }
 
     /**
@@ -162,18 +207,6 @@ class EventsManager implements EventDispatcherInterface
     }
 
     /**
-     * Remove event subscribers
-     *
-     * @param string $eventName
-     * @param string $extension
-     * @return bool
-     */
-    public function unsubscribe($eventName, $extension)
-    {
-        return $this->subscriberRegistry->deleteSubscribers($eventName,$extension);
-    }
-
-    /**
      * Fire event, dispatch event data to all subscribers
      *
      * @param string $eventName
@@ -187,6 +220,7 @@ class EventsManager implements EventDispatcherInterface
         if (is_object($event) == false) {
             $event = new Event($event);   
         }
+
         if (($event instanceof EventInterface) == false) {
             throw new \Exception("Not valid event object.", 1);
         }
@@ -197,9 +231,16 @@ class EventsManager implements EventDispatcherInterface
         if ($callbackOnly != true) {
             // get all subscribers for event
             if (empty($extension) == false) {
-                $subscribers = $this->subscriberRegistry->getExtensionSubscribers($extension,1,$eventName);   
+                $subscribers = $this->getSubscribers([
+                    'extension_name' => $extension,
+                    'status'         => 1,
+                    'name'           => $eventName
+                ]);   
             } else {
-                $subscribers = $this->subscriberRegistry->getSubscribers($eventName,1);       
+                $subscribers = $this->getSubscribers([                   
+                    'status'         => 1,
+                    'name'           => $eventName
+                ]);       
             }            
             $result = $this->executeEventHandlers($subscribers,$event);  
         }

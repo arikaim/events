@@ -148,7 +148,7 @@ class EventsManager implements EventDispatcherInterface
      */
     public function isCoreEvent($name)
     {
-        return (substr($name,0,4) == "core") ? true : false;          
+        return (\substr($name,0,4) == "core") ? true : false;          
     }
 
     /**
@@ -202,7 +202,7 @@ class EventsManager implements EventDispatcherInterface
         if ($single == true) {
             $this->subscribers[$eventName] = [$callback];
         } else {
-            array_push($this->subscribers[$eventName],$callback);
+            \array_push($this->subscribers[$eventName],$callback);
         }
     }
 
@@ -217,7 +217,7 @@ class EventsManager implements EventDispatcherInterface
      */
     public function dispatch($eventName, $event = [], $callbackOnly = false, $extension = null)
     {       
-        if (is_object($event) == false) {
+        if (\is_object($event) == false) {
             $event = new Event($event);   
         }
 
@@ -248,7 +248,7 @@ class EventsManager implements EventDispatcherInterface
         // run subscribed callback
         $callbackResult = $this->runCallback($eventName,$event);
 
-        return array_merge($result,$callbackResult);
+        return \array_merge($result,$callbackResult);
     }
 
     /**
@@ -267,7 +267,7 @@ class EventsManager implements EventDispatcherInterface
         foreach ($this->subscribers[$eventName] as $callback) {
             if (Utils::isClosure($callback) == true) {
                 $callbackResult = $callback($event);
-                array_push($result,$callbackResult);
+                \array_push($result,$callbackResult);
             }                  
         }
 
@@ -291,7 +291,7 @@ class EventsManager implements EventDispatcherInterface
             $subscriber = Factory::createInstance($item['handler_class']);
             $handlerMethod = (empty($item['handler_method']) == true) ? 'execute' : $item['handler_method'];
            
-            if (is_object($subscriber) == true && $subscriber instanceof EventSubscriberInterface) {
+            if (\is_object($subscriber) == true && $subscriber instanceof EventSubscriberInterface) {
                 $eventResult = $subscriber->{$handlerMethod}($event);
                 if (empty($eventResult) == false) {
                     $result[] = $eventResult;

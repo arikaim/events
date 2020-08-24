@@ -45,7 +45,7 @@ class Event implements EventInterface
      */
     public function __construct($params = []) 
     {
-        $this->parameters = (is_array($params) == true) ? $params : [$params];          
+        $this->parameters = (\is_array($params) == true) ? $params : [$params];          
     }
 
     /**

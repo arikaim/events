@@ -17,6 +17,7 @@ use Arikaim\Core\Interfaces\Events\EventSubscriberInterface;
 use Arikaim\Core\Interfaces\Events\EventDispatcherInterface;
 use Arikaim\Core\Interfaces\Events\EventRegistryInterface;
 use Arikaim\Core\Interfaces\Events\SubscriberRegistryInterface;
+use Exception;
 
 /**
  * Dispatch and manage events and event subscribers.
@@ -148,7 +149,7 @@ class EventsManager implements EventDispatcherInterface
      */
     public function isCoreEvent($name)
     {
-        return (\substr($name,0,4) == "core") ? true : false;          
+        return (\substr($name,0,4) == 'core') ? true : false;          
     }
 
     /**
@@ -222,7 +223,7 @@ class EventsManager implements EventDispatcherInterface
         }
 
         if (($event instanceof EventInterface) == false) {
-            throw new \Exception("Not valid event object.", 1);
+            throw new Exception('Not valid event object.',1);
         }
 
         $event->setName($eventName);          
@@ -283,9 +284,6 @@ class EventsManager implements EventDispatcherInterface
      */
     private function executeEventHandlers(array $eventSubscribers, Event $event)
     {       
-        if (empty($eventSubscribers) == true) {
-            return [];
-        }
         $result = [];
         foreach ($eventSubscribers as $item) {
             $subscriber = Factory::createInstance($item['handler_class']);

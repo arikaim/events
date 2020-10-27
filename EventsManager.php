@@ -149,7 +149,7 @@ class EventsManager implements EventDispatcherInterface
      */
     public function isCoreEvent($name)
     {
-        return (\substr($name,0,4) == 'core') ? true : false;          
+        return (\substr($name,0,4) == 'core');      
     }
 
     /**

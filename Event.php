@@ -139,7 +139,7 @@ class Event implements EventInterface
      */
     public function getParameter($name) 
     {
-        return (isset($this->parameters[$name]) == true) ? $this->parameters[$name] : null;         
+        return $this->parameters[$name] ?? null;         
     }
 
     /**
@@ -150,6 +150,6 @@ class Event implements EventInterface
      */
     public function hasParameter($name)
     {
-        return (isset($this->parameters[$name]) == true) ? true : false;           
+        return isset($this->parameters[$name]);      
     }
 }

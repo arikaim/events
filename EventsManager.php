@@ -183,7 +183,13 @@ class EventsManager implements EventDispatcherInterface
      * @param string|null $hadnlerMethod
      * @return bool
      */
-    public function subscribe(string $eventName, string $class, ?string $extension = null, int $priority = 0, ?string $hadnlerMethod = null): bool
+    public function subscribe(
+        string $eventName, 
+        string $class, 
+        ?string $extension = null, 
+        int $priority = 0, 
+        ?string $hadnlerMethod = null
+    ): bool
     {
         return $this->subscriberRegistry->addSubscriber($eventName,$class,$extension,$priority,$hadnlerMethod);
     }

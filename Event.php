@@ -43,9 +43,9 @@ class Event implements EventInterface
      *
      * @param array $params
      */
-    public function __construct($params = []) 
+    public function __construct(array $params = []) 
     {
-        $this->parameters = (\is_array($params) == true) ? $params : [$params];          
+        $this->parameters = $params;     
     }
 
     /**
@@ -54,7 +54,7 @@ class Event implements EventInterface
      * @param string $name
      * @return void
      */
-    public function setName($name)
+    public function setName(string $name): void
     {   
         $this->name = $name;
     }
@@ -64,7 +64,7 @@ class Event implements EventInterface
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -74,7 +74,7 @@ class Event implements EventInterface
      *
      * @return void
      */
-    public function stopPropagation()
+    public function stopPropagation(): void
     {
         $this->propagation = true;
     }
@@ -84,7 +84,7 @@ class Event implements EventInterface
      *
      * @return boolean
      */
-    public function isStopped()
+    public function isStopped(): bool
     {
         return $this->propagation;
     }
@@ -96,7 +96,7 @@ class Event implements EventInterface
      * @param mixed $value
      * @return void
      */
-    public function setParameter($name, $value)
+    public function setParameter(string $name, $value): void
     {
         $this->parameters[$name] = $value;
     }
@@ -106,7 +106,7 @@ class Event implements EventInterface
      *
      * @return array
      */
-    public function getParameters()
+    public function getParameters(): array
     {
         return $this->parameters;
     }
@@ -116,7 +116,7 @@ class Event implements EventInterface
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->parameters;
     }
@@ -135,11 +135,12 @@ class Event implements EventInterface
      * Return parameter
      *
      * @param string $name
-     * @return mxied
+     * @param mixed|null $default
+     * @return mixed|null
      */
-    public function getParameter($name) 
+    public function getParameter(string $name, $default = null) 
     {
-        return $this->parameters[$name] ?? null;         
+        return $this->parameters[$name] ?? $default;         
     }
 
     /**
@@ -148,7 +149,7 @@ class Event implements EventInterface
      * @param string $name
      * @return boolean
      */
-    public function hasParameter($name)
+    public function hasParameter(string $name): bool
     {
         return isset($this->parameters[$name]);      
     }

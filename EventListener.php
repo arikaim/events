@@ -19,7 +19,7 @@ abstract class EventListener implements EventListenerInterface
     /**
      * Event name
      *
-     * @var string
+     * @var string|null
      */
     protected $eventName;
 
@@ -28,7 +28,7 @@ abstract class EventListener implements EventListenerInterface
      *
      * @var integer
      */
-    protected $priority;
+    protected $priority = 0;
 
     /**
      * Subscriber code executed.
@@ -41,12 +41,12 @@ abstract class EventListener implements EventListenerInterface
     /**
      * Constructor
      *
-     * @param string $eventName
+     * @param string|null $eventName
      * @param integer $priority
      */
-    public function __construct($eventName = null, $priority = 0)
+    public function __construct(?string $eventName = null, int $priority = 0)
     {
-        if ($eventName != null) {
+        if (empty($eventName) == false) {
             $this->subscribe($eventName,$priority);
         }
     }
@@ -56,7 +56,7 @@ abstract class EventListener implements EventListenerInterface
      *
      * @return string
      */
-    public function getEventName()
+    public function getEventName(): string
     {
         return $this->eventName;
     }
@@ -66,7 +66,7 @@ abstract class EventListener implements EventListenerInterface
      *
      * @return integer
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return $this->priority;
     }
@@ -78,7 +78,7 @@ abstract class EventListener implements EventListenerInterface
      * @param integer $priority
      * @return void
      */
-    public function subscribe($eventName, $priority = 0)
+    public function subscribe(string $eventName, int $priority = 0): void
     {
         $this->eventName = $eventName;
         $this->priority = $priority;

@@ -62,7 +62,7 @@ class EventsManager implements EventDispatcherInterface
      * @param integer $status
      * @return boolean
      */
-    public function setEventsStatus(array $filter = [], $status)
+    public function setEventsStatus(array $filter = [], int $status): bool
     {
         return $this->eventRegistry->setEventsStatus($filter,$status);
     }
@@ -73,7 +73,7 @@ class EventsManager implements EventDispatcherInterface
      * @param array $filter
      * @return bool
      */
-    public function deleteEvents(array $filter)
+    public function deleteEvents(array $filter): bool
     {
         return $this->eventRegistry->deleteEvents($filter);
     }
@@ -84,7 +84,7 @@ class EventsManager implements EventDispatcherInterface
      * @param array $filter
      * @return bool
      */
-    public function deleteSubscribers(array $filter)
+    public function deleteSubscribers(array $filter): bool
     {
         return $this->subscriberRegistry->deleteSubscribers($filter);
     }
@@ -95,7 +95,7 @@ class EventsManager implements EventDispatcherInterface
      * @param array $filter
      * @return array
      */
-    public function getEvents(array $filter = [])
+    public function getEvents(array $filter = []): array
     {
         return $this->eventRegistry->getEvents($filter);
     }
@@ -106,7 +106,7 @@ class EventsManager implements EventDispatcherInterface
      * @param array $filter
      * @return array
      */
-    public function getSubscribers(array $filter = [])
+    public function getSubscribers(array $filter = []): array
     {
         return $this->subscriberRegistry->getSubscribers($filter);
     }
@@ -117,7 +117,7 @@ class EventsManager implements EventDispatcherInterface
      * @param string $eventName
      * @return bool
      */
-    public function unregisterEvent($eventName)
+    public function unregisterEvent(string $eventName): bool
     {
         return $this->eventRegistry->deleteEvent($eventName);
     }
@@ -126,12 +126,12 @@ class EventsManager implements EventDispatcherInterface
      * Add event to events db table.
      *
      * @param string $name
-     * @param string $title
-     * @param string $extension
-     * @param string $description
+     * @param string"null $title
+     * @param string|null $extension
+     * @param string|null $description
      * @return bool
      */
-    public function registerEvent($name, $title, $extension = null, $description = null)
+    public function registerEvent(string $name, ?string $title, ?string $extension = null, ?string $description = null): bool
     {
         if (($this->isCoreEvent($name) == true) && ($extension != null)) {
             // core events can't be registered from extension
@@ -147,7 +147,7 @@ class EventsManager implements EventDispatcherInterface
      * @param string $name
      * @return boolean
      */
-    public function isCoreEvent($name)
+    public function isCoreEvent(string $name): bool
     {
         return (\substr($name,0,4) == 'core');      
     }
@@ -156,10 +156,10 @@ class EventsManager implements EventDispatcherInterface
      * Register event subscriber.
      *
      * @param string $class
-     * @param string $extension
+     * @param string|null $extension
      * @return bool
      */
-    public function registerSubscriber($class, $extension)
+    public function registerSubscriber(string $class, ?string $extension): bool
     {
         $subscriber = Factory::createEventSubscriber($class,$extension);
         if ($subscriber != false) {
@@ -180,9 +180,10 @@ class EventsManager implements EventDispatcherInterface
      * @param string $class
      * @param string|null $extension
      * @param integer $priority
+     * @param string|null $hadnlerMethod
      * @return bool
      */
-    public function subscribe($eventName, $class, $extension = null, $priority = 0, $hadnlerMethod = null)
+    public function subscribe(string $eventName, string $class, ?string $extension = null, int $priority = 0, ?string $hadnlerMethod = null): bool
     {
         return $this->subscriberRegistry->addSubscriber($eventName,$class,$extension,$priority,$hadnlerMethod);
     }
@@ -195,7 +196,7 @@ class EventsManager implements EventDispatcherInterface
      * @param boolean $single
      * @return void
      */
-    public function subscribeCallback($eventName, $callback, $single = false)
+    public function subscribeCallback(string $eventName, $callback, bool $single = false): void
     {        
         if (isset($this->subscribers[$eventName]) == false) {
             $this->subscribers[$eventName] = [];
@@ -216,7 +217,7 @@ class EventsManager implements EventDispatcherInterface
      * @param string|null $extension
      * @return array
      */
-    public function dispatch($eventName, $event = [], $callbackOnly = false, $extension = null)
+    public function dispatch(string $eventName, $event = [], bool $callbackOnly = false, ?string $extension = null): array
     {       
         if (\is_object($event) == false) {
             $event = new Event($event);   
@@ -259,7 +260,7 @@ class EventsManager implements EventDispatcherInterface
      * @param EventInterface $event
      * @return array
      */
-    private function runCallback($eventName, $event)
+    private function runCallback(string $eventName, $event): array
     {
         if (isset($this->subscribers[$eventName]) == false) {
             return [];
@@ -282,7 +283,7 @@ class EventsManager implements EventDispatcherInterface
      * @param EventInterface $event
      * @return array 
      */
-    private function executeEventHandlers(array $eventSubscribers, Event $event)
+    private function executeEventHandlers(array $eventSubscribers, Event $event): array
     {       
         $result = [];
         foreach ($eventSubscribers as $item) {

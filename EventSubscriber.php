@@ -26,12 +26,13 @@ class EventSubscriber implements EventSubscriberInterface
     /**
      * Constructor
      *
-     * @param string $eventName
+     * @param string|null $eventName
      * @param integer $priority
+     * @param string|null $hadnlerMethod
      */
-    public function __construct($eventName = null, $priority = 0, $hadnlerMethod = null)
+    public function __construct(?string $eventName = null, int $priority = 0, ?string $hadnlerMethod = null)
     {
-        if ($eventName != null) {
+        if (empty($eventName) == false) {
             $this->subscribe($eventName,$hadnlerMethod,$priority);
         }
     }
@@ -54,7 +55,7 @@ class EventSubscriber implements EventSubscriberInterface
      * @param integer $priority
      * @return void
      */
-    public function subscribe($eventName, $hadnlerMethod = null, $priority = 0)
+    public function subscribe(string $eventName, ?string $hadnlerMethod = null, int $priority = 0): void
     {
         $event = [
             'event_name'     => $eventName,
@@ -69,7 +70,7 @@ class EventSubscriber implements EventSubscriberInterface
      *
      * @return array
      */
-    public function getSubscribedEvents() 
+    public function getSubscribedEvents(): array 
     {
         return $this->subscribedEvents;
     }

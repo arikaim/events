@@ -118,7 +118,10 @@ class Event implements EventInterface
      */
     public function toArray(): array
     {
-        return $this->parameters;
+        $result = $this->parameters;
+        $result['event_name'] = $this->getName();
+        
+        return $result;
     }
 
     /**

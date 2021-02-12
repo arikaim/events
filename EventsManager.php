@@ -17,6 +17,8 @@ use Arikaim\Core\Interfaces\Events\EventSubscriberInterface;
 use Arikaim\Core\Interfaces\Events\EventDispatcherInterface;
 use Arikaim\Core\Interfaces\Events\EventRegistryInterface;
 use Arikaim\Core\Interfaces\Events\SubscriberRegistryInterface;
+use Arikaim\Core\Interfaces\Events\EventLogInterface;
+use Arikaim\Core\Interfaces\LoggerInterface;
 use Exception;
 
 /**
@@ -46,13 +48,34 @@ class EventsManager implements EventDispatcherInterface
     protected $subscriberRegistry;
 
     /**
+     * Logger ref
+     *
+     * @var LoggerInterface|null
+     */
+    private $logger = null;
+
+    /**
+     * Options
+     *
+     * @var array
+     */
+    private $options = [];
+
+    /**
      * Constructor
      */
-    public function __construct(EventRegistryInterface $eventRegistry, SubscriberRegistryInterface $subscriberRegistry)
+    public function __construct(
+        EventRegistryInterface $eventRegistry, 
+        SubscriberRegistryInterface $subscriberRegistry,
+        ?LoggerInterface $logger = null,
+        array $options = []
+    )
     {
         $this->subscribers = [];
         $this->eventRegistry = $eventRegistry;
         $this->subscriberRegistry = $subscriberRegistry;
+        $this->logger = $logger;
+        $this->options = $options;
     }
     
     /**
@@ -250,6 +273,8 @@ class EventsManager implements EventDispatcherInterface
                     'name'           => $eventName
                 ]);       
             }            
+          
+            $this->log('Dispatch event '. $eventName,$event->toArray());
             $result = $this->executeEventHandlers($subscribers,$event);  
         }
 
@@ -297,7 +322,14 @@ class EventsManager implements EventDispatcherInterface
             $handlerMethod = (empty($item['handler_method']) == true) ? 'execute' : $item['handler_method'];
            
             if (\is_object($subscriber) == true && $subscriber instanceof EventSubscriberInterface) {
+
+                // check for subscriber log
+                if ($subscriber instanceof EventLogInterface) {
+                    $this->log($subscriber->getLogMessage(),$subscriber->getLogContext());
+                }
+
                 $eventResult = $subscriber->{$handlerMethod}($event);
+                // logging
                 if (empty($eventResult) == false) {
                     $result[] = $eventResult;
                 }              
@@ -305,5 +337,24 @@ class EventsManager implements EventDispatcherInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Log
+     *
+     * @param string $message
+     * @param array $context
+     * @return boolean
+     */
+    private function log(string $message, array $context = []): bool
+    {
+        if (empty($this->logger) == true) {
+            return false;
+        }
+        if (($this->options['log'] ?? false) == true) {
+            return $this->logger->info($message,$context);
+        }
+      
+        return false;
     }
 }

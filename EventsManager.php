@@ -126,12 +126,14 @@ class EventsManager implements EventDispatcherInterface
     /**
      * Get subscribers list
      *
-     * @param array $filter
+     * @param string|null $eventName
+     * @param string|null $extensionName
+     * @param integer|null $status
      * @return array
      */
-    public function getSubscribers(array $filter = []): array
+    public function getSubscribers(?string $eventName = null, ?string $extensionName, ?int $status = null): array
     {
-        return $this->subscriberRegistry->getSubscribers($filter);
+        return $this->subscriberRegistry->getSubscribers($eventName,$extensionName,$status);
     }
 
     /**
@@ -260,21 +262,10 @@ class EventsManager implements EventDispatcherInterface
         $result = [];
 
         if ($callbackOnly != true) {
-            // get all subscribers for event
-            if (empty($extension) == false) {
-                $subscribers = $this->getSubscribers([
-                    'extension_name' => $extension,
-                    'status'         => 1,
-                    'name'           => $eventName
-                ]);   
-            } else {
-                $subscribers = $this->getSubscribers([                   
-                    'status'         => 1,
-                    'name'           => $eventName
-                ]);       
-            }            
-          
-            $this->log('Dispatch event '. $eventName,$event->toArray());
+            // get all subscribers for event           
+            $subscribers = $this->getSubscribers($eventName,$extension,1);
+                           
+            $this->log('Dispatch event ' . $eventName,$event->toArray());
             $result = $this->executeEventHandlers($subscribers,$event);  
         }
 
@@ -321,7 +312,7 @@ class EventsManager implements EventDispatcherInterface
             $subscriber = Factory::createInstance($item['handler_class']);
             $handlerMethod = (empty($item['handler_method']) == true) ? 'execute' : $item['handler_method'];
            
-            if (\is_object($subscriber) == true && $subscriber instanceof EventSubscriberInterface) {
+            if ($subscriber instanceof EventSubscriberInterface) {
 
                 // check for subscriber log
                 if ($subscriber instanceof EventLogInterface) {

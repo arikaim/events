@@ -91,6 +91,17 @@ class EventsManager implements EventDispatcherInterface
     }
 
     /**
+     * Return true if event exist
+     *
+     * @param string $name
+     * @return boolean
+     */
+    public function hasEvent(string $name): bool
+    {
+        return $this->eventRegistry->hasEvent($name);
+    }
+
+    /**
      * Delete events.
      *
      * @param array $filter

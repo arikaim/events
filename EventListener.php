@@ -46,7 +46,10 @@ abstract class EventListener implements EventListenerInterface
      */
     public function __construct(?string $eventName = null, int $priority = 0)
     {
-        if (empty($eventName) == false) {
+        $this->eventName = $eventName;
+        $this->priority = $priority;
+        
+        if (empty($this->eventName) == false) {
             $this->subscribe($eventName,$priority);
         }
     }

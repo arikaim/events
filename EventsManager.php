@@ -13,6 +13,7 @@ use Arikaim\Core\Utils\Factory;
 use Arikaim\Core\Utils\Utils;
 use Arikaim\Core\Events\Event;
 use Arikaim\Core\Interfaces\Events\EventInterface;
+use Arikaim\Core\Interfaces\Events\EventListenerInterface;
 use Arikaim\Core\Interfaces\Events\EventSubscriberInterface;
 use Arikaim\Core\Interfaces\Events\EventDispatcherInterface;
 use Arikaim\Core\Interfaces\Events\EventRegistryInterface;
@@ -191,19 +192,29 @@ class EventsManager implements EventDispatcherInterface
     /**
      * Register event subscriber.
      *
-     * @param string $class
+     * @param string|object $subscriber Subscriber class or object ref
      * @param string|null $extension
      * @return bool
      */
-    public function registerSubscriber(string $class, ?string $extension): bool
+    public function registerSubscriber($subscriber, ?string $extension): bool
     {
-        $subscriber = Factory::createEventSubscriber($class,$extension);
-        if ($subscriber != false) {
+        if (\is_object($subscriber) == false) {
+            $subscriber = Factory::createEventSubscriber($subscriber,$extension);
+        }
+        $subscriberClass = Utils::getBaseClassName($subscriber);
+
+        if ($subscriber instanceof EventSubscriberInterface) {
             $events = $subscriber->getSubscribedEvents();
             foreach ($events as $event) {
-                $this->subscribe($event['event_name'],$class,$extension,$event['priority'],$event['handler_method']);
+                $this->subscribe($event['event_name'],$subscriberClass,$extension,$event['priority'],$event['handler_method']);
             }
             return true;
+        }
+
+        if ($subscriber instanceof EventListenerInterface) {
+            if (empty($subscriber->getEventName()) == false) {
+                $this->subscribe($subscriber->getEventName(),$subscriberClass,$extension,$subscriber->getPriority(),null);
+            }
         }
 
         return false;
@@ -275,7 +286,7 @@ class EventsManager implements EventDispatcherInterface
         if ($callbackOnly != true) {
             // get all subscribers for event           
             $subscribers = $this->getSubscribers($eventName,$extension,1);
-                           
+                     
             $this->log('Dispatch event ' . $eventName,$event->toArray());
             $result = $this->executeEventHandlers($subscribers,$event);  
         }
@@ -319,12 +330,12 @@ class EventsManager implements EventDispatcherInterface
     private function executeEventHandlers(array $eventSubscribers, Event $event): array
     {       
         $result = [];
+
         foreach ($eventSubscribers as $item) {
             $subscriber = Factory::createInstance($item['handler_class']);
             $handlerMethod = (empty($item['handler_method']) == true) ? 'execute' : $item['handler_method'];
            
             if ($subscriber instanceof EventSubscriberInterface) {
-
                 // check for subscriber log
                 if ($subscriber instanceof EventLogInterface) {
                     $this->log($subscriber->getLogMessage(),$subscriber->getLogContext());

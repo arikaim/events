@@ -257,7 +257,7 @@ class EventsManager implements EventDispatcherInterface
         if ($single == true) {
             $this->subscribers[$eventName] = [$callback];
         } else {
-            \array_push($this->subscribers[$eventName],$callback);
+            $this->subscribers[$eventName][] = $callback;
         }
     }
 
@@ -313,7 +313,7 @@ class EventsManager implements EventDispatcherInterface
         foreach ($this->subscribers[$eventName] as $callback) {
             if (Utils::isClosure($callback) == true) {
                 $callbackResult = $callback($event);
-                \array_push($result,$callbackResult);
+                $result[] = $callbackResult;
             }                  
         }
 

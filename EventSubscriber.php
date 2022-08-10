@@ -57,12 +57,11 @@ class EventSubscriber implements EventSubscriberInterface
      */
     public function subscribe(string $eventName, ?string $hadnlerMethod = null, int $priority = 0): void
     {
-        $event = [
+        $this->subscribedEvents[] = [
             'event_name'     => $eventName,
             'handler_method' => $hadnlerMethod,        
             'priority'       => $priority
-        ];
-        $this->subscribedEvents[] = $event;        
+        ];        
     }
 
     /**

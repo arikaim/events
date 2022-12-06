@@ -86,7 +86,7 @@ class EventsManager implements EventDispatcherInterface
      * @param integer $status
      * @return boolean
      */
-    public function setEventsStatus(array $filter = [], int $status): bool
+    public function setEventsStatus(array $filter, int $status): bool
     {
         return $this->eventRegistry->setEventsStatus($filter,$status);
     }
@@ -143,7 +143,7 @@ class EventsManager implements EventDispatcherInterface
      * @param integer|null $status
      * @return array
      */
-    public function getSubscribers(?string $eventName = null, ?string $extensionName, ?int $status = null): array
+    public function getSubscribers(?string $eventName = null, ?string $extensionName = null, ?int $status = null): array
     {
         return $this->subscriberRegistry->getSubscribers($eventName,$extensionName,$status);
     }

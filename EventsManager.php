@@ -179,6 +179,18 @@ class EventsManager implements EventDispatcherInterface
     }
 
     /**
+     * Save event properties descrition
+     *
+     * @param string $name
+     * @param mixed $descriptor
+     * @return boolean
+     */
+    public function savePropertiesDescriptor(string $name, $descriptor): bool
+    {
+        return $this->eventRegistry->savePropertiesDescriptor($name,$descriptor);
+    }
+
+    /**
      * Check if event name is core event name.
      *
      * @param string $name

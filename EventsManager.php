@@ -19,7 +19,6 @@ use Arikaim\Core\Interfaces\Events\EventDispatcherInterface;
 use Arikaim\Core\Interfaces\Events\EventRegistryInterface;
 use Arikaim\Core\Interfaces\Events\SubscriberRegistryInterface;
 use Arikaim\Core\Interfaces\Events\EventLogInterface;
-use Arikaim\Core\Interfaces\LoggerInterface;
 use Exception;
 
 /**
@@ -49,13 +48,6 @@ class EventsManager implements EventDispatcherInterface
     protected $subscriberRegistry;
 
     /**
-     * Logger ref
-     *
-     * @var LoggerInterface|null
-     */
-    private $logger = null;
-
-    /**
      * Options
      *
      * @var array
@@ -68,14 +60,12 @@ class EventsManager implements EventDispatcherInterface
     public function __construct(
         EventRegistryInterface $eventRegistry, 
         SubscriberRegistryInterface $subscriberRegistry,
-        ?LoggerInterface $logger = null,
         array $options = []
     )
     {
         $this->subscribers = [];
         $this->eventRegistry = $eventRegistry;
         $this->subscriberRegistry = $subscriberRegistry;
-        $this->logger = $logger;
         $this->options = $options;
     }
     
@@ -373,11 +363,10 @@ class EventsManager implements EventDispatcherInterface
      */
     private function log(string $message, array $context = []): bool
     {
-        if (empty($this->logger) == true) {
-            return false;
-        }
+        global $arikaim;
+
         if (($this->options['log'] ?? false) == true) {
-            return $this->logger->info($message,$context);
+            return $arikaim->get('logger')->info($message,$context);
         }
       
         return false;

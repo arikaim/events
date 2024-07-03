@@ -12,6 +12,7 @@ namespace Arikaim\Core\Events;
 use Arikaim\Core\Utils\Factory;
 use Arikaim\Core\Utils\Utils;
 use Arikaim\Core\Events\Event;
+use Arikaim\Core\Events\EventDispatchJob;
 use Arikaim\Core\Interfaces\Events\EventInterface;
 use Arikaim\Core\Interfaces\Events\EventListenerInterface;
 use Arikaim\Core\Interfaces\Events\EventSubscriberInterface;
@@ -261,6 +262,27 @@ class EventsManager implements EventDispatcherInterface
         } else {
             $this->subscribers[$eventName][] = $callback;
         }
+    }
+
+    /**
+     * Push dispatch event job in queue
+     *
+     * @param string $eventName
+     * @param array  $params
+     * @return bool
+     */
+    public function addDispatchEventJob(string $eventName, array $params = []): bool
+    {
+        global $arikaim;
+
+        $params = [
+            'event_name'   => $eventName,
+            'event_params' => $params
+        ];
+
+        $job = new EventDispatchJob($params,$this);
+
+        return $arikaim->get('queue')->addJob($job,null,false,null,null,$params);
     }
 
     /**

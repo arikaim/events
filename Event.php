@@ -12,17 +12,35 @@ namespace Arikaim\Core\Events;
 use Arikaim\Core\Interfaces\Events\EventInterface;
 use Arikaim\Core\Collection\Collection;
 
+use Arikaim\Core\Collection\Traits\Descriptor;
+
 /**
  * Base event class
 */
 class Event implements EventInterface
 {
+    use Descriptor;
+
     /**
      * Event name
      *
      * @var string
      */
     protected $name;
+
+    /**
+     * Event title
+     *
+     * @var string|null
+     */
+    protected $title;
+
+    /**
+     * Event description
+     *
+     * @var string|null
+     */
+    protected $description;
 
     /**
      * Event parameters
@@ -45,7 +63,27 @@ class Event implements EventInterface
      */
     public function __construct(array $params = []) 
     {
-        $this->parameters = $params;     
+        $this->parameters = $params;   
+        $this->setDescriptorClass('Arikaim\\Core\\Events\\EventDescriptor');
+        $this->init();         
+    }
+
+    /**
+     * Init event
+     *
+     * @return void
+     */
+    protected function init(): void
+    {
+    }
+
+    /**
+     * Init descriptor properties 
+     *
+     * @return void
+     */
+    protected function initDescriptor(): void
+    {
     }
 
     /**
@@ -60,6 +98,28 @@ class Event implements EventInterface
     }
 
     /**
+     * Set event title
+     *
+     * @param string $name
+     * @return void
+     */
+    public function setTitle(string $title): void
+    {   
+        $this->title = $title;
+    }
+
+    /**
+     * Set event description
+     *
+     * @param string $description
+     * @return void
+     */
+    public function setDescription(string $description): void
+    {   
+        $this->description = $description;
+    }
+
+    /**
      * Get event name
      *
      * @return string
@@ -67,6 +127,26 @@ class Event implements EventInterface
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * Get event description
+     *
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * Get event title
+     *
+     * @return string|null
+     */
+    public function getTitle(): ?string
+    {
+        return $this->title;
     }
 
     /**

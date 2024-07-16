@@ -71,6 +71,16 @@ class EventsManager implements EventDispatcherInterface
     }
     
     /**
+     * Get events storage ref
+     *
+     * @return EventRegistryInterface
+     */
+    public function registry(): EventRegistryInterface
+    {
+        return $this->eventRegistry;
+    }
+
+    /**
      * Set events status
      *
      * @param array $filter
@@ -167,6 +177,17 @@ class EventsManager implements EventDispatcherInterface
         }
         
         return $this->eventRegistry->registerEvent($name,$title,$extension,$description);
+    }
+
+    /**
+     * Get event properties
+     *
+     * @param string $name
+     * @return array|null
+     */
+    public function getEventProperties(string $name): ?array
+    {
+        return $this->eventRegistry->getProperties($name);
     }
 
     /**

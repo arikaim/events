@@ -3,7 +3,7 @@
  * Arikaim
  *
  * @link        http://www.arikaim.com
- * @copyright   Copyright (c)  Konstantin Atanasov <info@arikaim.com>
+ * @copyright   Copyright (c)  Intersoft <info@arikaim.com>
  * @license     http://www.arikaim.com/license
  * 
 */
